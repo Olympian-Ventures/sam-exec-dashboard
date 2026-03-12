@@ -77,33 +77,47 @@
       const fab = document.createElement('button');
       fab.id = 'aiFab';
       fab.className = 'ai-fab';
-      fab.innerHTML = `<span class="dog-face"><svg width="38" height="38" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <!-- Husky silhouette — profile facing right, pointed ears, collar -->
-        <!-- Left ear (tall, pointed) -->
-        <polygon points="18,8 12,22 24,22" fill="#93C5FD"/>
-        <polygon points="18,10 14,20 22,20" fill="#60A5FA"/>
-        <!-- Right ear (tall, pointed, slightly behind) -->
-        <polygon points="30,6 24,20 36,22" fill="#93C5FD"/>
-        <polygon points="30,8 26,19 34,20" fill="#60A5FA"/>
-        <!-- Head shape (profile, facing right) -->
-        <path d="M16,22 Q14,28 16,32 Q18,36 22,38 L30,40 Q36,38 38,34 Q40,30 38,24 Q36,20 30,20 Q24,20 16,22 Z" fill="#93C5FD"/>
-        <!-- Snout / muzzle (pointing right) -->
-        <path d="M30,32 Q36,30 40,32 Q42,34 40,36 Q36,38 30,38 Z" fill="#BFDBFE"/>
-        <!-- Eye -->
-        <circle cx="26" cy="28" r="2.5" fill="#1e3a5f"/>
-        <circle cx="27" cy="27" r="1" fill="white"/>
+      fab.innerHTML = `<span class="dog-face"><svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <!-- Friendly front-facing husky -->
+        <!-- Left ear outer -->
+        <polygon points="8,4 4,24 20,24" fill="#5B8DB8"/>
+        <!-- Left ear inner -->
+        <polygon points="8,8 7,21 17,22" fill="#93C5FD"/>
+        <!-- Right ear outer -->
+        <polygon points="56,4 60,24 44,24" fill="#5B8DB8"/>
+        <!-- Right ear inner -->
+        <polygon points="56,8 57,21 47,22" fill="#93C5FD"/>
+        <!-- Head (dark outer fur) -->
+        <ellipse cx="32" cy="34" rx="24" ry="22" fill="#5B8DB8"/>
+        <!-- Face mask (white/light center — classic husky pattern) -->
+        <path d="M32,16 Q40,18 42,26 Q42,34 38,40 L34,48 Q32,50 30,48 L26,40 Q22,34 22,26 Q24,18 32,16 Z" fill="#DBEAFE"/>
+        <!-- Forehead blaze (light stripe up center) -->
+        <path d="M32,14 Q36,16 36,20 Q34,24 32,24 Q30,24 28,20 Q28,16 32,14 Z" fill="#EFF6FF"/>
+        <!-- Left eye (icy blue, husky-style) -->
+        <ellipse cx="24" cy="28" rx="4" ry="4.5" fill="white"/>
+        <circle cx="24" cy="28" r="3" fill="#38BDF8"/>
+        <circle cx="24" cy="28" r="1.5" fill="#0c4a6e"/>
+        <circle cx="25.2" cy="26.8" r="1" fill="white"/>
+        <!-- Right eye -->
+        <ellipse cx="40" cy="28" rx="4" ry="4.5" fill="white"/>
+        <circle cx="40" cy="28" r="3" fill="#38BDF8"/>
+        <circle cx="40" cy="28" r="1.5" fill="#0c4a6e"/>
+        <circle cx="41.2" cy="26.8" r="1" fill="white"/>
+        <!-- Eyebrow markings (darker fur above eyes) -->
+        <path d="M18,23 Q21,20 26,22" stroke="#3d7aab" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M46,23 Q43,20 38,22" stroke="#3d7aab" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <!-- Nose -->
-        <ellipse cx="40" cy="33" rx="2.5" ry="2" fill="#1e3a5f"/>
-        <!-- Mouth line -->
-        <path d="M38,35 Q36,37 32,38" stroke="#1e3a5f" stroke-width="1" fill="none" stroke-linecap="round"/>
-        <!-- Collar -->
-        <path d="M18,38 Q24,42 32,40" stroke="#60A5FA" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <!-- Neck / chest -->
-        <path d="M16,34 Q14,40 16,48 Q18,52 24,54 Q30,54 34,50 Q36,46 34,40" fill="#93C5FD"/>
-        <!-- Chest highlight -->
-        <path d="M18,40 Q20,46 24,50 Q28,50 30,46 Q28,42 22,40 Z" fill="#BFDBFE"/>
-        <!-- Subtle tail hint -->
-        <path d="M14,44 Q8,38 10,32" stroke="#93C5FD" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="32" cy="38" rx="4" ry="3" fill="#1e3a5f"/>
+        <ellipse cx="32" cy="37" rx="2" ry="1" fill="#3d6080" opacity="0.5"/>
+        <!-- Mouth - friendly smile -->
+        <path d="M28,42 Q30,45 32,43 Q34,45 36,42" stroke="#1e3a5f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- Tongue peeking out -->
+        <ellipse cx="32" cy="45" rx="2.5" ry="3" fill="#F87171">
+          <animate attributeName="ry" values="3;3.8;3" dur="1s" repeatCount="indefinite"/>
+        </ellipse>
+        <!-- Cheek fluff -->
+        <path d="M10,32 Q6,38 10,44 Q14,46 18,44" fill="#5B8DB8"/>
+        <path d="M54,32 Q58,38 54,44 Q50,46 46,44" fill="#5B8DB8"/>
       </svg></span>`;
       fab.title = 'Ask SAM AI Agent';
       document.body.appendChild(fab);
