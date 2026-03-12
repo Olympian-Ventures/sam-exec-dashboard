@@ -11,16 +11,64 @@
     isListening: false,
     recognition: null,
     history: [],
+    hasBarked: false,
 
     // ---- INITIALIZATION ----
     init() {
       this.createWidget();
       this.bindEvents();
       this.initSpeechRecognition();
+      // Page-load bark — a quick, cute "I'm here!" bark
+      this.playBark();
       // Welcome message after a short delay
       setTimeout(() => {
         this.addMessage('ai', "Hey Stuart — I'm your SAM assistant. Ask me anything about the portfolio. Try:\n• \"Who hasn't paid?\"\n• \"What's our occupancy?\"\n• \"Any urgent tasks?\"\n\nYou can type or tap the mic to speak.");
       }, 600);
+    },
+
+    // ---- BARK SOUND (synthesized via Web Audio API) ----
+    playBark() {
+      if (this.hasBarked) return;
+      this.hasBarked = true;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+
+        // --- Bark 1: short, bright "yip" ---
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(600, now);
+        osc1.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+        gain1.gain.setValueAtTime(0.18, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc1.connect(gain1).connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.12);
+
+        // --- Bark 2: slightly lower follow-up "ruff" ---
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(480, now + 0.18);
+        osc2.frequency.exponentialRampToValueAtTime(240, now + 0.28);
+        gain2.gain.setValueAtTime(0.0001, now + 0.17);
+        gain2.gain.linearRampToValueAtTime(0.15, now + 0.18);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+        osc2.connect(gain2).connect(ctx.destination);
+        osc2.start(now + 0.17);
+        osc2.stop(now + 0.32);
+
+        // Bounce the FAB to draw the eye
+        const fab = document.getElementById('aiFab');
+        if (fab) {
+          fab.classList.add('bark-bounce');
+          setTimeout(() => fab.classList.remove('bark-bounce'), 600);
+        }
+
+        // Clean up
+        setTimeout(() => ctx.close(), 1000);
+      } catch(e) { /* silent fail if audio not available */ }
     },
 
     // ---- CREATE WIDGET HTML ----
@@ -29,28 +77,33 @@
       const fab = document.createElement('button');
       fab.id = 'aiFab';
       fab.className = 'ai-fab';
-      fab.innerHTML = `<span class="dog-face"><svg width="32" height="32" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <!-- Ears -->
-        <ellipse cx="14" cy="18" rx="10" ry="14" fill="#60A5FA" transform="rotate(-15 14 18)"/>
-        <ellipse cx="50" cy="18" rx="10" ry="14" fill="#60A5FA" transform="rotate(15 50 18)"/>
-        <ellipse cx="14" cy="18" rx="7" ry="10" fill="#93C5FD" transform="rotate(-15 14 18)"/>
-        <ellipse cx="50" cy="18" rx="7" ry="10" fill="#93C5FD" transform="rotate(15 50 18)"/>
-        <!-- Head -->
-        <circle cx="32" cy="34" r="22" fill="#60A5FA"/>
-        <circle cx="32" cy="36" r="18" fill="#93C5FD"/>
-        <!-- Eyes -->
-        <circle cx="24" cy="30" r="4" fill="#1e3a5f"/>
-        <circle cx="40" cy="30" r="4" fill="#1e3a5f"/>
-        <circle cx="25.5" cy="28.5" r="1.5" fill="white"/>
-        <circle cx="41.5" cy="28.5" r="1.5" fill="white"/>
+      fab.innerHTML = `<span class="dog-face"><svg width="38" height="38" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <!-- Husky silhouette — profile facing right, pointed ears, collar -->
+        <!-- Left ear (tall, pointed) -->
+        <polygon points="18,8 12,22 24,22" fill="#93C5FD"/>
+        <polygon points="18,10 14,20 22,20" fill="#60A5FA"/>
+        <!-- Right ear (tall, pointed, slightly behind) -->
+        <polygon points="30,6 24,20 36,22" fill="#93C5FD"/>
+        <polygon points="30,8 26,19 34,20" fill="#60A5FA"/>
+        <!-- Head shape (profile, facing right) -->
+        <path d="M16,22 Q14,28 16,32 Q18,36 22,38 L30,40 Q36,38 38,34 Q40,30 38,24 Q36,20 30,20 Q24,20 16,22 Z" fill="#93C5FD"/>
+        <!-- Snout / muzzle (pointing right) -->
+        <path d="M30,32 Q36,30 40,32 Q42,34 40,36 Q36,38 30,38 Z" fill="#BFDBFE"/>
+        <!-- Eye -->
+        <circle cx="26" cy="28" r="2.5" fill="#1e3a5f"/>
+        <circle cx="27" cy="27" r="1" fill="white"/>
         <!-- Nose -->
-        <ellipse cx="32" cy="38" rx="4" ry="3" fill="#1e3a5f"/>
-        <!-- Mouth -->
-        <path d="M28 42 Q32 46 36 42" stroke="#1e3a5f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <!-- Tongue -->
-        <ellipse cx="32" cy="46" rx="3" ry="4" fill="#F87171" class="dog-tongue">
-          <animate attributeName="ry" values="4;5;4" dur="0.8s" repeatCount="indefinite"/>
-        </ellipse>
+        <ellipse cx="40" cy="33" rx="2.5" ry="2" fill="#1e3a5f"/>
+        <!-- Mouth line -->
+        <path d="M38,35 Q36,37 32,38" stroke="#1e3a5f" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <!-- Collar -->
+        <path d="M18,38 Q24,42 32,40" stroke="#60A5FA" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Neck / chest -->
+        <path d="M16,34 Q14,40 16,48 Q18,52 24,54 Q30,54 34,50 Q36,46 34,40" fill="#93C5FD"/>
+        <!-- Chest highlight -->
+        <path d="M18,40 Q20,46 24,50 Q28,50 30,46 Q28,42 22,40 Z" fill="#BFDBFE"/>
+        <!-- Subtle tail hint -->
+        <path d="M14,44 Q8,38 10,32" stroke="#93C5FD" stroke-width="3" fill="none" stroke-linecap="round"/>
       </svg></span>`;
       fab.title = 'Ask SAM AI Agent';
       document.body.appendChild(fab);
