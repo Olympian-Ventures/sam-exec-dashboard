@@ -500,8 +500,19 @@ body {
 }
 @keyframes dog-wag {
   0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-6deg); }
-  75% { transform: rotate(6deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+.ai-fab.bark-bounce {
+  animation: bark-bounce 0.5s ease-out !important;
+}
+@keyframes bark-bounce {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.25) rotate(-5deg); }
+  30% { transform: scale(1.15) rotate(4deg); }
+  45% { transform: scale(1.1) rotate(-2deg); }
+  60% { transform: scale(1.05) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
 .ai-fab:hover {
   transform: scale(1.1);
