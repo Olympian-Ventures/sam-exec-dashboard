@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAM - Executive Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <img src="sam-logo.svg" alt="Strategic Asset Management" class="header-logo">
+      <div class="header-titles">
+        <h1>Strategic Asset Management</h1>
+        <p class="subtitle">Executive Dashboard</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="last-updated">
+        <span class="update-dot"></span>
+        <span>Updated <span id="currentDate"></span></span>
+      </div>
+      <div class="owner-badge">Stuart's View</div>
+    </div>
+  </header>
+
+  <!-- Alert Banner (shows if urgent items exist) -->
+  <div class="alert-banner" id="alertBanner">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span id="alertText"></span>
+    <button class="alert-dismiss" onclick="this.parentElement.style.display='none'">&times;</button>
+  </div>
+
+  <!-- KPI Strip -->
+  <section class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-icon occ-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="kpi-data">
+        <span class="kpi-value" id="kpiOccupancy"></span>
+        <span class="kpi-label">Occupancy</span>
+        <span class="kpi-trend positive" id="kpiOccTrend"></span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon vacant-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+      </div>
+      <div class="kpi-data">
+        <span class="kpi-value" id="kpiVacant"></span>
+        <span class="kpi-label">Vacant Units</span>
+        <span class="kpi-trend neutral">Across 6 properties</span>
+      </div>
+    </div>
+    <div class="kpi-card danger" id="kpiOverdueCard">
+      <div class="kpi-icon danger-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="kpi-data">
+        <span class="kpi-value" id="kpiOverdue"></span>
+        <span class="kpi-label">Overdue Bills</span>
+        <span class="kpi-trend negative" id="kpiOverdueCount"></span>
+      </div>
+    </div>
+    <div class="kpi-card warning" id="kpiReceivablesCard">
+      <div class="kpi-icon warning-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      </div>
+      <div class="kpi-data">
+        <span class="kpi-value" id="kpiReceivables"></span>
+        <span class="kpi-label">Receivables at Risk</span>
+        <span class="kpi-trend negative">8 accounts</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon wo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="kpi-data">
+        <span class="kpi-value" id="kpiWorkOrders"></span>
+        <span class="kpi-label">Work Orders</span>
+        <span class="kpi-trend neutral">Active maintenance</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon complaint-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <div class="kpi-data">
+        <span class="kpi-value" id="kpiComplaints"></span>
+        <span class="kpi-label">Open Issues</span>
+        <span class="kpi-trend negative" id="kpiComplaintsCritical"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Voice Command Bar -->
+  <section class="voice-bar" id="voiceBar">
+    <div class="voice-input-wrap">
+      <button class="voice-btn" id="voiceBtn" title="Hold to speak, or click to toggle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <input type="text" id="taskInput" class="task-input" placeholder="Type or speak a task for Todoist... (e.g. 'Call tenant about leak p1')">
+      <select id="taskPriority" class="task-priority">
+        <option value="p4">P4</option>
+        <option value="p3">P3</option>
+        <option value="p2">P2</option>
+        <option value="p1">P1</option>
+      </select>
+      <button class="task-submit" id="taskSubmit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Add Task
+      </button>
+    </div>
+    <div class="voice-status" id="voiceStatus"></div>
+  </section>
+
+  <!-- Main Grid -->
+  <main class="dashboard-grid">
+
+    <!-- URGENT ACTIONS -->
+    <section class="card urgent-card">
+      <div class="card-header">
+        <h2>Urgent Actions Required</h2>
+        <span class="badge badge-critical" id="urgentCount"></span>
+      </div>
+      <div class="urgent-list" id="urgentList"></div>
+    </section>
+
+    <!-- COMPLAINTS & ISSUES -->
+    <section class="card complaints-card">
+      <div class="card-header">
+        <h2>Complaints & Issues</h2>
+        <span class="badge badge-danger" id="complaintsCount"></span>
+      </div>
+      <div class="complaints-list" id="complaintsList"></div>
+    </section>
+
+    <!-- PAYABLES -->
+    <section class="card payables-card">
+      <div class="card-header">
+        <h2>Payables & Bills</h2>
+        <div class="card-header-meta">
+          <span class="badge badge-danger">3 Overdue</span>
+          <span class="badge badge-warning">2 Due Soon</span>
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Invoice</th>
+              <th>Property</th>
+              <th>Vendor</th>
+              <th class="right">Amount</th>
+              <th class="right">Balance</th>
+            </tr>
+          </thead>
+          <tbody id="payablesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RECEIVABLES AT RISK -->
+    <section class="card receivables-card">
+      <div class="card-header">
+        <h2>Receivables at Risk</h2>
+        <span class="badge badge-danger" id="receivablesBadge"></span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tenant</th>
+              <th class="right">Amount</th>
+              <th class="center">Days Late</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody id="receivablesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- OCCUPANCY CHART + VACANCY -->
+    <section class="card chart-card">
+      <div class="card-header">
+        <h2>Occupancy by Portfolio</h2>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="occupancyChart"></canvas>
+      </div>
+    </section>
+
+    <section class="card vacancy-card">
+      <div class="card-header">
+        <h2>Vacancy Alerts</h2>
+        <span class="badge badge-danger">59 Units</span>
+      </div>
+      <div class="vacancy-list" id="vacancyList"></div>
+    </section>
+
+    <!-- WORK ORDERS -->
+    <section class="card workorders-card">
+      <div class="card-header">
+        <h2>Open Work Orders</h2>
+        <span class="badge badge-neutral">12 Active</span>
+      </div>
+      <div class="workorder-list" id="workorderList"></div>
+    </section>
+
+    <!-- TASK PIPELINE (replaces old tasks card) -->
+    <section class="card pipeline-card">
+      <div class="card-header">
+        <h2>Task Pipeline</h2>
+        <a href="https://app.todoist.com/app/project/steph-onboard-as-prop-mgr-6g5r75HmGcHMHf3P" target="_blank" class="card-link">Open Todoist</a>
+      </div>
+      <div class="pipeline-columns" id="pipelineColumns">
+        <div class="pipeline-col">
+          <div class="pipeline-col-header high">High Priority</div>
+          <div class="pipeline-items" id="pipelineHigh"></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-header medium">Medium</div>
+          <div class="pipeline-items" id="pipelineMedium"></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-header other">Other / Training</div>
+          <div class="pipeline-items" id="pipelineOther"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO OVERVIEW -->
+    <section class="card portfolio-card">
+      <div class="card-header">
+        <h2>Portfolio Overview</h2>
+      </div>
+      <div class="table-container">
+        <table class="data-table portfolio-table">
+          <thead>
+            <tr>
+              <th>Portfolio</th>
+              <th class="center">Properties</th>
+              <th class="center">Units</th>
+              <th class="center">Tenants</th>
+              <th class="center">Occupancy</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="portfolioBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RECENT COMMUNICATIONS -->
+    <section class="card comms-card">
+      <div class="card-header">
+        <h2>Recent Communications</h2>
+      </div>
+      <div class="comms-list" id="commsList"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>Strategic Asset Management &mdash; Executive Dashboard v2.0</span>
+    <span>Data: Revela &middot; Todoist &middot; Gmail &middot; Updated <span id="footerDate"></span></span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="ai-assistant.js"></script>
+</body>
+</html>
